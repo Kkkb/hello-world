@@ -41,32 +41,32 @@ class Sentence(object):
 			raise ParserError("Expected a verb next.")
 
 	def parse_object(self, word_list):
-		skip(word_list, 'stop')
-		next = peek(word_list)
+		self.skip(word_list, 'stop')
+		next = self.peek(word_list)
 
 		if next == 'noun':
-			return match(word_list, 'noun')
+			return self.match(word_list, 'noun')
 		if next == 'direction':
-			return match(word_list, 'direction')
+			return self.match(word_list, 'direction')
 		else:
 			raise ParserError("Expected a noun or direction next.")
 
 	def parse_subject(self, word_list, subj):
-		verb = parse_verb(word_list)
-		obj = parse_object(word_list)
+		verb = self.parse_verb(word_list)
+		obj = self.parse_object(word_list)
 
 		return Sentence(subj, verb, obj)
 
 	def parse_sentence(self, word_list):
-		skip(word_list, 'stop')
+		self.skip(word_list, 'stop')
 
-		start = peek(word_list)
+		start = self.peek(word_list)
 
 		if start == 'noun':
-			subj = match(word_list, 'noun')
-			return parse_subject(word_list, subj)
+			subj = self.match(word_list, 'noun')
+			return self.parse_subject(word_list, subj)
 		elif start == 'verb':
 			# assume the subject is the player then
-			return parse_subject(word_list, ('noun','player'))
+			return self.parse_subject(word_list, ('noun','player'))
 		else:
 			raise ParserError("Must start with subject, object, or verb not: %s" % start)

@@ -53,4 +53,36 @@ def test_parse_verb():
 	object = ('direction', 'north')
 	sentence = make_sentence.Sentence(subject, verb, object)
 
+	word_list = make_sentence.lexicon.scan("go north")
+	assert_equal(sentence.parse_verb(word_list), ('verb', 'go'))
+#	assert_equal(sentence.parse_verb(word_list), make_sentence.ParserError())
+
+def test_object():
+	subject = ('noun', 'player')
+	verb = ('verb', 'go')
+	object = ('direction', 'north')
+	sentence = make_sentence.Sentence(subject, verb, object)
+
+	word_list = make_sentence.lexicon.scan("the bear north")
+	assert_equal(sentence.parse_object(word_list), ('noun', 'bear'))
+	assert_equal(sentence.parse_object(word_list), ('direction', 'north'))
+#	assert_equal(sentence.parse_object(word_list), ('noun', 'bear'))
+
+def test_parse_subject():
+	subject = ('noun', 'player')
+	verb = ('verb', 'go')
+	object = ('direction', 'north')
+	sentence = make_sentence.Sentence(subject, verb, object)
+
+	word_list = make_sentence.lexicon.scan("eat the bear")
+	subj = ('noun', 'player')
+#	assert_equal(sentence.parse_subject(word_list, subj), make_sentence.Sentence(('noun', 'player'), ('verb', 'eat'), ('noun', 'bear')))
 	
+def test_parse_sentence():
+	subject = ('noun', 'player')
+	verb = ('verb', 'go')
+	object = ('direction', 'north')
+	sentence = make_sentence.Sentence(subject, verb, object)
+
+	word_list = make_sentence.lexicon.scan("go north bear 1234")
+	a = sentence.parse_sentence(word_list)
