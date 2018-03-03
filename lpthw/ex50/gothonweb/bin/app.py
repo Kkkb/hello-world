@@ -1,5 +1,6 @@
 import web
 from gothonweb import map
+from random import randint
 
 # web.config.debug = False
 urls = (
@@ -59,7 +60,8 @@ class GameEngine(object):
 			return render.show_room(room=session.room)
 		else:
 			# why is there here? do you need it?
-			return render.you_died()
+			bye = map.generic_death.go(str(randint(1, 4)))
+			return render.you_died(bye)
 
 	def POST(self):
 		form = web.input(action=None)
