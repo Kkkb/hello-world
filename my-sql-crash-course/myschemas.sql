@@ -298,3 +298,210 @@ FROM orderitems
 GROUP BY order_num
 HAVING SUM(quantity*item_price) >= 50
 ORDER BY ordertotal;
+
+SELECT order_num
+FROM orderitems
+WHERE prod_id = 'TNT2';
+
+SELECT cust_id
+FROM orders
+WHERE order_num IN (20005, 20007);
+
+SELECT cust_id
+FROM orders
+WHERE order_num IN(SELECT order_num
+				   FROM orderitems
+                   WHERE prod_id = 'TNT2');
+                   
+SELECT cust_name, cust_contact
+FROM customers
+WHERE cust_id IN (10001,10004);
+
+SELECT cust_name, cust_contact
+FROM customers
+WHERE cust_id IN (SELECT cust_id
+				  FROM orders
+                  WHERE order_num IN(SELECT order_num
+									 FROM orderitems
+                                     WHERE prod_id = 'TNT2'));
+                                     
+SELECT COUNT(*) AS orders
+FROM orders
+WHERE cust_id = 10001;
+
+SELECT cust_name,
+	   cust_state,
+       (SELECT COUNT(*)
+        FROM orders
+        WHERE orders.cust_id = customers.cust_id) AS orders
+FROM customers
+ORDER BY cust_name;
+
+SELECT vend_name, prod_name, prod_price
+FROM vendors, products
+WHERE vendors.vend_id = products.vend_id
+ORDER BY vend_name, prod_name;
+
+SELECT vend_name, prod_name, prod_price
+FROM vendors, products
+ORDER BY vend_name, prod_name;
+
+SELECT vend_name, prod_name, prod_price
+FROM vendors INNER JOIN products ON vendors.vend_id = products.vend_id;
+
+SELECT prod_name, vend_name, prod_price, quantity
+FROM orderitems, products, vendors
+WHERE products.vend_id = vendors.vend_id
+  AND orderitems.prod_id = products.prod_id
+  AND order_num = 20005;
+  
+SELECT cust_name, cust_contact
+FROM customers, orders, orderitems
+WHERE customers.cust_id = orders.cust_id
+  AND orders.order_num = orderitems.order_num
+  AND prod_id = 'TNT2';
+  
+SELECT Concat(RTrim(vend_name), ' (', RTrim(vend_country), ')') AS vend_title
+FROM vendors
+ORDER BY vend_name;
+
+SELECT cust_name, cust_contact
+FROM customers AS c, orders AS o, orderitems AS oi
+WHERE c.cust_id = o.cust_id
+  AND oi.order_num = o.order_num
+  AND prod_id = 'TNT2';
+  
+SELECT prod_id, prod_name
+FROM products
+WHERE vend_id = (SELECT vend_id
+				FROM products
+                WHERE prod_id = 'DTNTR');
+                
+SELECT p1.prod_id, p1.prod_name
+FROM products AS p1, products AS p2
+WHERE p1.vend_id = p2.vend_id
+  AND p2.prod_id = 'DTNTR';
+  
+SELECT c.*, o.order_num, o.order_date, oi.prod_id, oi.quantity, OI.item_price
+FROM customers AS c, orders AS o, orderitems AS oi
+WHERE c.cust_id = o.cust_id
+  AND oi.order_num = o.order_num
+  AND prod_id = 'FB';
+
+SELECT customers.cust_id, orders.order_num
+FROM customers INNER JOIN orders
+  ON customers.cust_id = orders.cust_id;
+  
+SELECT customers.cust_id, orders.order_num
+FROM customers LEFT OUTER JOIN orders
+  ON customers.cust_id = orders.cust_id;
+
+SELECT customers.cust_name,
+	   customers.cust_id,
+       COUNT(orders.order_num) AS num_ord
+FROM customers INNER JOIN orders
+  ON customers.cust_id = orders.cust_id
+GROUP BY customers.cust_id;
+
+SELECT customers.cust_name,
+	   customers.cust_id,
+       COUNT(orders.order_num) AS num_ord
+FROM customers LEFT OUTER JOIN orders
+  ON customers.cust_id = orders.cust_id
+GROUP BY customers.cust_id;
+
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE prod_price <= 5;
+
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE vend_id IN (1001,1002);
+
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE prod_price <= 5
+UNION
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE vend_id IN (1001, 1002);
+
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE prod_price <= 5
+   OR vend_id IN (1001,1002);
+   
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE prod_price <= 5
+UNION ALL
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE vend_id IN (1001,1002);
+
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE prod_price <= 5
+UNION
+SELECT vend_id, prod_id, prod_price
+FROM products
+WHERE vend_id IN (1001,1002)
+ORDER BY vend_id, prod_price;
+
+CREATE TABLE productnotes
+(
+  note_id int NOT NULL AUTO_INCREMENT,
+  prod_id char(10) NOT NULL,
+  note_date datetime NOT NULL,
+  note_text text NULL,
+  PRIMARY KEY(note_id),
+  FULLTEXT(note_text)
+) ENGINE=MyISAM;
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('rabbit');
+
+SELECT note_text
+FROM productnotes
+WHERE note_text LIKE '%rabbit%';
+
+SELECT note_text,
+	   Match(note_text) Against('rabbit') AS rank
+FROM productnotes;
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('anvils');
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('anvils' WITH QUERY EXPANSION);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('heavy' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('heavy -rope*' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('+rabbit +bait' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('"rabbit bait"' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('"rabbit bait"' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('>rabbit <carrot' IN BOOLEAN MODE);
+
+SELECT note_text
+FROM productnotes
+WHERE Match(note_text) Against('+safe +(<combination)' IN BOOLEAN MODE);
