@@ -505,3 +505,73 @@ WHERE Match(note_text) Against('>rabbit <carrot' IN BOOLEAN MODE);
 SELECT note_text
 FROM productnotes
 WHERE Match(note_text) Against('+safe +(<combination)' IN BOOLEAN MODE);
+
+INSERT INTO Customers
+VALUES(NULL,
+   'Pep E. LaPew',
+   '100 Main Street',
+   'Los Angeles',
+   'CA',
+   '90046',
+   'USA',
+   NULL,
+   NULL);
+   
+INSERT INTO customers(cust_name,
+   cust_address,
+   cust_city,
+   cust_state,
+   cust_zip,
+   cust_country,
+   cust_contact,
+   cust_email)
+VALUES('Pep E. LaPew',
+   '100 Main Street',
+   'Los Angeles',
+   'CA',
+   '90046',
+   'USA',
+   NULL,
+   NULL);
+   
+UPDATE customers
+SET cust_email = 'elmer@fudd.com'
+WHERE cust_id = 10005;
+
+UPDATE customers
+SET cust_email = NULL
+WHERE cust_id = 10005;
+
+DELETE FROM customers
+WHERE cust_id = 10006;
+
+CREATE TABLE customers
+(
+  cust_id         int       NOT NULL AUTO_INCREMENT,
+  cust_name       char(50)  NOT NULL,
+  cust_address    char(50)  NULL,
+  cust_city       char(50)  NULL,
+  cust_state      char(5)   NULL,
+  cust_zip        char(10)  NULL,
+  country_country char(50)  NULL,
+  cust_contact    char(50)  NULL,
+  cust_email      char(255) NULL,
+  PRIMARY KEY (cust_id)
+) ENGINE=InnoDB;
+
+SELECT cust_name, cust_contact
+FROM customers, orders, orderitems
+WHERE customers.cust_id = orders.cust_id
+  AND orderitems.order_num = orders.order_num
+  AND prod_id = 'TNT2';
+
+CREATE VIEW productcustomers AS
+SELECT cust_name, cust_contact, prod_id
+FROM customers, orders, orderitems
+WHERE customers.cust_id = orders.cust_id
+  AND orderitems.order_num = orders.order_num;
+  
+  
+SELECT cust_name, cust_contact
+FROM productcustomers
+WHERE prod_id = 'TNT2';
