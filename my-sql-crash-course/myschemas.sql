@@ -614,3 +614,90 @@ FROM orderitems;
 SELECT *
 FROM orderitemsexpanded
 WHERE order_num = 20005;
+
+CALL productpricing(@pricelow,
+					@pricehigh,
+                    @priceaverage);
+                    
+CALL productpricing();
+
+DROP PROCEDURE productpricing;
+
+CREATE PROCEDURE productpricing(
+	OUT pl DECIMAL(8,2),
+    OUT ph DECIMAL(8,2),
+    OUT pa DECIMAL(8,2)
+)
+BEGIN
+	SELECT Min(prod_price)
+    INTO pl
+    FROM products;
+    SELECT Max(prod_price)
+    INTO ph
+    FROM products;
+    SELECT avg(prod_price)
+    INTO pa
+    FROM products;
+END;
+
+CALL productpricing(@pricelow,
+					@pricehigh,
+                    @priceaverage);
+                    
+SELECT @priceaverage;
+
+SELECT @pricehigh, @pricelow, @priceaverage;
+
+CREATE PROCEDURE ordertotal(
+	IN onumber INT,
+    OUT ototal DECIMAL(8,2)
+)
+BEGIN
+	SELECT Sum(item_price*quantity)
+    FROM orderitems
+    WHERE order_num = onumber
+    INTO ototal;
+END;
+
+CALL ordertotal(20005, @total);
+
+SELECT @total;
+
+CALL ordertotal(20009, @total);
+SELECT @total;
+
+-- Name: ordertotal
+-- Parameters: onumber = order number
+-- 			   taxable = 0 if not taxable, 1 if taxable
+--             ototal = order total variable
+
+CREATE PROCEDURE ordertotal(
+	IN onumber INT,
+    IN taxable BOOLEAN,
+    OUT ototal DECIMAL(8,2)
+) COMMENT 'Obtain order total, optionally adding tax'
+BEGIN
+
+	-- Declare variable for total
+    DECLARE total DECIMAL(8,2);
+    -- Declare tax percentage
+    DECLARE taxrate INT DEFAULT 6;
+    
+    -- Get the otder total
+    SELECT Sum(item_price*quantity)
+    FROM orderitems
+    WHERE order_num = onumber
+    INTO total;
+    
+    -- Is this taxable?
+    IF taxable THEN
+		-- Yes, so add taxrate to the total
+        SELECT total+(total/100*taxrate) INTO total;
+	END IF;
+    
+CALL ordertotal(20005, 0, @total);
+
+CALL ordertotal(20005, 1, @total);
+SELECT @total;
+
+SHOW CREATE PROCEDURE ordertotal;
