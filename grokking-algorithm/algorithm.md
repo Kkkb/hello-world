@@ -37,3 +37,8 @@ merge sort 合并排序
 队列(queue)只支持两种操作：入队和出队。
 
 队列是一种*先进先出*(First In First Out, FIFO)的数据结构，栈是一种*后进先出*(Last In First Out, LIFO)的数据结构
+
+树是一种特殊的图，没有往后指的边
+
+狄克斯特拉算法(Dijkstr's algorithm)
+
