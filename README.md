@@ -1,6 +1,3 @@
-# hello-world
-Some study note
-
 # hello-world :books:
 
 Some study note
